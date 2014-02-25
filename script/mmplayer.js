@@ -3,8 +3,8 @@
  * Wayou Feb 21,2014
  * lisenced under the MIT license
  * for more information you can
- * visit the project page on github :
- * see the live demo :
+ * visit the project page on github :https://github.com/Wayou/MeowmeowPlayer/
+ * see the live demo :http://wayou.github.io/MeowmeowPlayer/
  * or contact me: liuwayong@gmail.com
  */
 'use strict'
