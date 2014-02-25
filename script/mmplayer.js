@@ -1,5 +1,5 @@
 /*
- *Meow meow player v0.1.0- a music player built with HTML5 audio API =>_<=
+ *Meow meow player v0.1.0 - a music player built with HTML5 audio API =>_<=
  *Wayou Feb 21,2014
  *Lisenced under the MIT license
  *project page:
@@ -12,18 +12,20 @@ window.onload = function() {
 }
 var MmPlayer = function() {
     this.VERSION = '0.1.0',
-    this.APP_NAME = 'Meowmeow Player',
+    this.APP_NAME = 'Meow meow Player',
     this.title = this.APP_NAME, //the app title on the top of the page, will upgrade when songs playing
     this.audioContext = null,
     this.source = null,
     this.playlist = [],
     this.currentOrderNum = 0, //orderNum starts from 0
-    this.currentTime = 0, //when click pause, store the time where the song paused to resume play
+    this.currentFileName = null,
+    this.currentBuffer = null,
     this.listContainer = document.getElementById('playlist'),
     this.status = 0, //1 for stopped and 1 for playing
     this.canvas = document.getElementById('canvas'),
     this.animationId = null,
-    this.titleUpdateId = null
+    this.titleUpdateId = null,
+    this.forceStop = false
 }
 MmPlayer.prototype = {
     ini: function() {
@@ -46,7 +48,10 @@ MmPlayer.prototype = {
         var that = this,
             audioInput = document.getElementById('addFiles'),
             dropContainer = document.getElementsByTagName("canvas")[0],
-            listContainer = document.getElementById('playlist');
+            listContainer = document.getElementById('playlist'),
+            playBtn = document.getElementById('playBtn'),
+            emptyBtn = document.getElementById('empty'),
+            shuffleBtn = document.getElementById('shuffle');
         //listen the file upload
         audioInput.onchange = function() {
             if (that.audioContext === null) {
@@ -54,10 +59,15 @@ MmPlayer.prototype = {
             };
             //the if statement fixes the file selction cancle, because the onchange will trigger even the file selection been canceled
             if (audioInput.files.length !== 0) {
-                that._updateTitle('Uploading', true);
                 // var files = that._convertFileListToArray(audioInput.files);
-                that.addToList(audioInput.files);
-                that._getFilesAndRun(that.files);
+                if (that.status === 1) {
+                    //if a song is playing, jsut add the new files to the list,else add files and start to play
+                    that.addToList(audioInput.files);
+                } else {
+                    that._updateTitle('Uploading', true);
+                    that.addToList(audioInput.files);
+                    that._getFilesAndRun();
+                }
             };
         };
         //listen the drag & drop
@@ -79,10 +89,13 @@ MmPlayer.prototype = {
             if (that.audioContext === null) {
                 return
             };
-            that._updateTitle('Uploading', true);
-            //get the dropped file
-            that.addToList(e.dataTransfer.files);
-            that._getFilesAndRun(that.files);
+            if (that.status === 1) {
+                that.addToList(e.dataTransfer.files);
+            } else {
+                that._updateTitle('Uploading', true);
+                that.addToList(e.dataTransfer.files);
+                that._getFilesAndRun();
+            }
         }, false);
         //play selected entry from the playlist
         listContainer.addEventListener('click', function(e) {
@@ -90,8 +103,11 @@ MmPlayer.prototype = {
             if (e.target.className === 'title') {
                 //play selected item
                 var selectedIndex = that._getSlectedIndex(e.target);
-                that.currentOrderNum = selectedIndex;
-                that.play(selectedIndex);
+                if (selectedIndex === that.currentOrderNum) {
+                    that.play(selectedIndex, 0); //if the current playing song is selected, then skip decode and play from 0 
+                } else {
+                    that.play(selectedIndex);
+                };
             } else {
                 if (e.target.className === 'remove') {
                     //remove selected item from list
@@ -100,6 +116,31 @@ MmPlayer.prototype = {
                 };
             };
         });
+        //play button
+        playBtn.addEventListener('click', function(e) {
+            if (that.status === 1) {
+                //currently the song is playing, then sotre the progress time and pause it
+                that.forceStop = true;
+                that.source.stop(0);
+                that.source = null;
+                that.status = 0;
+                that.currentFileName = null;
+                playBtn.textContent = '>';
+                playBtn.title = 'play';
+            } else {
+                that.play(that.currentOrderNum);
+                playBtn.textContent = '!';
+                playBtn.title = 'stop';
+            };
+        })
+        //empty button
+        emptyBtn.addEventListener('click', function(e) {
+            that.emptyList();
+        })
+        //shuffle button
+        shuffleBtn.addEventListener('click', function(e) {
+            that.shuffleList();
+        })
     },
     _convertFileListToArray: function(files) {
         var result = [];
@@ -108,15 +149,29 @@ MmPlayer.prototype = {
         };
         return result;
     },
-    _getFilesAndRun: function(files) {
+    _getFilesAndRun: function() {
+        if (this.playlist.length===0) {
+            this._updateTitle(this.APP_NAME,false);
+            return
+        };
         this.play(0); //first run, play the first song
     },
     play: function(orderNum, time) {
         if (time !== undefined && this.source !== null) {
             //resume play
-            this.source.play(time);
+            //this.source.start(time);
+            this._drawSpectrum(this.audioContext, this.currentBuffer);
         } else {
             this.currentOrderNum = orderNum;
+            this.currentFileName = this.playlist[orderNum].name.slice(0, -4);
+            var lis = this.listContainer.getElementsByTagName('li');
+            for (var i = lis.length - 1; i >= 0; i--) {
+                if (i === orderNum) {
+                    this.addClass(lis[i], 'current');
+                } else {
+                    this.removeClass(lis[i], 'current');
+                }
+            };
             this._readFile(orderNum);
         };
     },
@@ -141,8 +196,9 @@ MmPlayer.prototype = {
         if (audioContext === null) {
             return;
         };
-        this._updateTitle('Decoding the audio', true);
+        this._updateTitle('Decoding ' + this.currentFileName, true);
         audioContext.decodeAudioData(arraybuffer, function(buffer) {
+            that.currentBuffer = buffer;
             that._updateTitle('Decode succussfully,start the visualizer', true);
             that._drawSpectrum(audioContext, buffer);
         }, function(e) {
@@ -173,16 +229,19 @@ MmPlayer.prototype = {
         source.connect(analyser);
         analyser.connect(audioCtx.destination);
         if (this.source !== null) {
+            this.forceStop = true;
             this.source.stop(0);
             this.status = 0;
-            cancelAnimationFrame(this.animationId);
+        };
+        cancelAnimationFrame(this.animationId); //stop the previous animation
+        source.onended = function() {
+            that._audioEnd();
         };
         source.start(0);
         this._updateTitle('Playing ' + this.playlist[this.currentOrderNum].name.slice(0, -4), false);
         this.source = source;
         this.status = 1;
         var drawFrame = function() {
-            console.log('audio processing...');
             var array = new Uint8Array(analyser.frequencyBinCount);
             analyser.getByteFrequencyData(array);
             //draw the visualizer stuff on the canvas
@@ -209,10 +268,12 @@ MmPlayer.prototype = {
         that.animationId = requestAnimationFrame(drawFrame);
     },
     pause: function(time) {
+        this.forceStop = true;
         this.source.stop(time);
         this.status = 0;
     },
     stop: function() {
+        this.forceStop = true;
         this.source.stop(0);
         this.status = 0;
     },
@@ -222,6 +283,11 @@ MmPlayer.prototype = {
             container = this.listContainer,
             docFragment = document.createDocumentFragment(); //use docfragment to improve the performance
         for (var i = files.length - 1; i >= 0; i--) {
+            if (files[i].size > 31457280) {
+            //skip file whoes size is large then 30Mb
+            console.log(files[i].name +'skiped for file size larger than 30Mb');
+                 continue;
+            };
             li = document.createElement("li");
             li.innerHTML = '<span class="remove" title="remove from list">X</span>' + '<span class="title">' + files[i].name.slice(0, -4) + '</span>';
             docFragment.appendChild(li);
@@ -232,20 +298,61 @@ MmPlayer.prototype = {
     removeFromList: function(orderNum, targetEle) {
         this.playlist.splice(orderNum, 1); //remove the specified item from the list
         this.listContainer.removeChild(targetEle);
+        if (orderNum < this.currentOrderNum) {
+            this.currentOrderNum -= 1;
+            return;
+        };
         if (this.playlist.length === 0) {
+            //list is empty, reset all variables
+            this.forceStop = true;
             this.source.stop(0);
             this.source = null;
+            this.status = 0;
+            this.currentFileName = null;
+            this.currentOrderNum = 0;
             return;
         };
         if (orderNum === this.currentOrderNum) {
-            this.play(this.currentOrderNum);
+            if (this.currentOrderNum === this.playlist.length) {
+                this.play(0);
+            } else {
+                this.play(this.currentOrderNum);
+            };
+        }
+    },
+    emptyList: function() {
+        this.playlist = [];
+        this.forceStop = true;
+        this.currentFileName = null;
+        if (this.status === 1) {
+            this.source.stop(0);
+        }
+        this.source = null;
+        this.status = 0;
+        while (this.listContainer.firstChild) {
+            this.listContainer.removeChild(this.listContainer.firstChild);
         };
+        this._updateTitle(this.APP_NAME, false);
     },
     shuffleList: function() {
         var that = this,
             lastIndex,
             container = this.listContainer;
         //TODO
+    },
+    _audioEnd: function() {
+        if (this.forceStop) {
+            this.forceStop = false;
+            return;
+        };
+        this.source = null;
+        this._updateTitle(this.APP_NAME, false);
+        if (this.currentOrderNum === this.playlist.length - 1) {
+            this.currentOrderNum = 0;
+        } else {
+            this.currentOrderNum += 1;
+        };
+        this.play(this.currentOrderNum);
     },
     _getSlectedIndex: function(target) {
         var li = target.parentNode,
@@ -257,13 +364,13 @@ MmPlayer.prototype = {
         }
         return index;
     },
-    _getLiIndex: function(li) {
-        var childs = li.parentNode.childNodes;
-        for (i = 0; i < childs.length; i++) {
-            if (li == childs[i]) break;
-        }
-        return i;
-    },
+    // _getLiIndex: function(li) {
+    //     var childs = li.parentNode.childNodes;
+    //     for (i = 0; i < childs.length; i++) {
+    //         if (li == childs[i]) break;
+    //     }
+    //     return i;
+    // },
     _updateTitle: function(text, processing) {
         var infoBar = document.getElementsByTagName('header')[0],
             dots = '...',

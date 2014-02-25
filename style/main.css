@@ -12,6 +12,9 @@ div, span, p, table, canvas, header, footer, nav, section, aside {
     -moz-transition: all 0.3s ease-in-out;
     -ms-transition: all 0.3s ease-in-out;
 }
+.current{
+    color:green;
+}
 header {
     position: absolute;
     top: 0;
