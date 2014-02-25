@@ -1,61 +1,56 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Meow meow player by Wayou</title>
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Meowmeo Player | HTML5 audio player with spectrum visualizer">
+        <meta name="author" content="Wayou Liu">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Meowmeow Player | HTML5 audio player with spectrum visualizer</title>
+        <link rel="stylesheet" href="style/main.css">
+        <link rel="shortcut icon" href="favicon.ico">
+    </head>
+    <body>
+        <header>
+            <span id="showControl">PLAYLIST</span> <span id="info"> Meow meow Player</span>
+        </header>
+        <div class="wrapper">
+            <aside class="control">
+                <p  class="close"><span title="colse" id="close">X</span></p>
+                <ul id="controlPanel">
+                    <li class='play'>
+                        <div id="pre" class="controlBtn" title="previous">I&lt;</div>
+                    	<div id="playBtn"  class="controlBtn" title="stop">O</div>
+                        <div id="next" class="controlBtn" title="next">&gt;I</div>
+                    </li>
+                    <li>
+                        <div id="shuffle" title="shuffle the order of songs">
+                            Shuffle
+                        </div>
+                    </li>
+                    <li>
+                        <div id="empty" title="empty the list">
+                            Empty
+                        </div>
+                    </li>
+                    <li>
+                        <div class="add" title="add files to list, you can also drag files to the page">
+                            <label for="addFiles" >Add </label>
+                            <input type="file" id="addFiles" multiple />
+                        </div>
+                    </li>
+                </ul>
+                <div class="dividLine"></div>
+                <ol id="playlist">
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1>Meow meow player</h1>
-        <p>An HTML5 Music Player with Spectrum Visualizer</p>
-
-        <p class="view"><a href="https://github.com/Wayou/MeowmeowPlayer">View the Project on GitHub <small>Wayou/MeowmeowPlayer</small></a></p>
-
-
-        <ul>
-          <li><a href="https://github.com/Wayou/MeowmeowPlayer/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/Wayou/MeowmeowPlayer/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/Wayou/MeowmeowPlayer">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>
-<a name="meow-meow-player" class="anchor" href="#meow-meow-player"><span class="octicon octicon-link"></span></a>Meow meow~ Player</h1>
-
-<p>An HTML5 Music Player with Spectrum Visualizer </p>
-
-<p>It can be used as a local music player</p>
-
-<h2>
-<a name="screenshot" class="anchor" href="#screenshot"><span class="octicon octicon-link"></span></a>Screenshot</h2>
-
-<p><img src="https://raw.github.com/Wayou/MeowmeowPlayer/master/resource/img/mmplayer_screenshot.jpg" alt="alt tag"></p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/Wayou">Wayou</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-              <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-46794744-6");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
-
-  </body>
+                </ol>
+            </aside>
+            <div id="visualizer">
+                <canvas width="800" height="350" id="canvas">!Canvas not supported by your browser :(</canvas>
+            </div>
+        </div>
+        <footer>
+            <small>Star me on <a href="#" target="_blank">GitHub</a></small>
+        </footer>
+        <script src="script/mmplayer.js"></script>
+    </body>
 </html>
