@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Meowmeo Player | HTML5 audio player with spectrum visualizer">
+        <meta name="author" content="Wayou Liu">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Meowmeow Player | HTML5 audio player with spectrum visualizer</title>
+        <link rel="stylesheet" href="style/main.css">
+    </head>
+    <body>
+        <header>
+            <span id="showControl"></span> Meowmeow Player
+        </header>
+        <div class="wrapper">
+            <aside class="control">
+                <p  class="close"><span title="colse">X</span></p>
+                <ul id="controlPanel">
+                    <li class='play'>
+                    	<div id="playBtn">
+                    		>
+                    	</div>
+                    </li>
+                    <li>
+                        <div id="shuffle">
+                            Shuffle
+                        </div>
+                    </li>
+                    <li>
+                        <div id="empty">
+                            Empty
+                        </div>
+                    </li>
+                    <li>
+                        <div class="add">
+                            <label for="addFiles" >Add </label>
+                            <input type="file" id="addFiles" multiple />
+                        </div>
+                    </li>
+                </ul>
+                <div class="dividLine"></div>
+                <ol id="playlist">
+
+                </ol>
+            </aside>
+            <div id="visualizer">
+                <canvas width="800" height="350" id="canvas">!Canvas not supported by your browser :(</canvas>
+            </div>
+        </div>
+        <footer>
+            <small>Star me on <a href="#" target="_blank">GitHub</a></small>
+        </footer>
+        <script src="script/mmplayer.js"></script>
+    </body>
+</html>
