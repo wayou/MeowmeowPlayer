@@ -1,4 +1,4 @@
-MeowmeowPlayer
+Meow meowP~ layer
 ==============
 
 An HTML5 Music Player with Spectrum Visualizer 
