@@ -249,7 +249,7 @@ MmPlayer.prototype = {
             var lis = that.listContainer.getElementsByTagName('li');
             for (var i = lis.length - 1; i >= 0; i--) {
                 if (i === that.currentOrderNum) {
-                    this.addClass(lis[i], 'fail');//mark the file as failed one
+                    that.addClass(lis[i], 'fail');//mark the file as failed one
                     break;
                 }
             };
