@@ -1,9 +1,11 @@
 /*
- *Meow meow player v0.1.0 - a music player built with HTML5 audio API =>_<=
- *Wayou Feb 21,2014
- *Lisenced under the MIT license
- *project page:
- *live demo:
+ * Meow meow player v0.1.0 - a music player built with HTML5 audio API =>_<=
+ * Wayou Feb 21,2014
+ * lisenced under the MIT license
+ * for more information you can
+ * visit the project page on github :
+ * see the live demo :
+ * or contact me: liuwayong@gmail.com
  */
 'use strict'
 window.onload = function() {
@@ -29,6 +31,7 @@ var MmPlayer = function() {
 }
 MmPlayer.prototype = {
     ini: function() {
+        this.drawMarkCat();
         this._prepareAPI();
         this._startApp();
     },
@@ -51,7 +54,11 @@ MmPlayer.prototype = {
             listContainer = document.getElementById('playlist'),
             playBtn = document.getElementById('playBtn'),
             emptyBtn = document.getElementById('empty'),
-            shuffleBtn = document.getElementById('shuffle');
+            shuffleBtn = document.getElementById('shuffle'),
+            closeBtn = document.getElementById('close'),
+            showControlBtn = document.getElementById('showControl'),
+            preBtn = document.getElementById('pre'),
+            nextBtn = document.getElementById('next');
         //listen the file upload
         audioInput.onchange = function() {
             if (that.audioContext === null) {
@@ -81,7 +88,11 @@ MmPlayer.prototype = {
             e.dataTransfer.dropEffect = 'copy';
         }, false);
         dropContainer.addEventListener("dragleave", function() {
-            that._updateTitle(that.info, false);
+            if (that.status === 1) {
+                that._updateTitle('playing ' + that.currentFileName, false);
+            } else {
+                that._updateTitle(that.APP_NAME, false);
+            };
         }, false);
         dropContainer.addEventListener("drop", function(e) {
             e.stopPropagation();
@@ -90,6 +101,7 @@ MmPlayer.prototype = {
                 return
             };
             if (that.status === 1) {
+                that._updateTitle('playing ' + that.currentFileName, false);
                 that.addToList(e.dataTransfer.files);
             } else {
                 that._updateTitle('Uploading', true);
@@ -129,7 +141,7 @@ MmPlayer.prototype = {
                 playBtn.title = 'play';
             } else {
                 that.play(that.currentOrderNum);
-                playBtn.textContent = '!';
+                playBtn.textContent = 'O';
                 playBtn.title = 'stop';
             };
         })
@@ -141,6 +153,32 @@ MmPlayer.prototype = {
         shuffleBtn.addEventListener('click', function(e) {
             that.shuffleList();
         })
+        //close button
+        closeBtn.addEventListener('click', function(e) {
+            document.getElementsByClassName('control')[0].style.left = "-100%";
+        })
+        //show control button
+        showControlBtn.addEventListener('click', function(e) {
+            document.getElementsByClassName('control')[0].style.left = "-1px";
+        })
+        //pre  button
+        preBtn.addEventListener('click', function(e) {
+            if (that.currentOrderNum === 0) {
+                that.currentOrderNum = that.playlist.length - 1;
+            } else {
+                --that.currentOrderNum;
+            };
+            that.play(that.currentOrderNum);
+        })
+        //next  button
+        nextBtn.addEventListener('click', function(e) {
+            if (that.currentOrderNum === that.playlist.length - 1) {
+                that.currentOrderNum = 0;
+            } else {
+                ++that.currentOrderNum;
+            };
+            that.play(that.currentOrderNum);
+        })
     },
     _convertFileListToArray: function(files) {
         var result = [];
@@ -150,8 +188,8 @@ MmPlayer.prototype = {
         return result;
     },
     _getFilesAndRun: function() {
-        if (this.playlist.length===0) {
-            this._updateTitle(this.APP_NAME,false);
+        if (this.playlist.length === 0) {
+            this._updateTitle(this.APP_NAME, false);
             return
         };
         this.play(0); //first run, play the first song
@@ -162,6 +200,9 @@ MmPlayer.prototype = {
             //this.source.start(time);
             this._drawSpectrum(this.audioContext, this.currentBuffer);
         } else {
+            if (this.playlist.length === 0) {
+                return;
+            };
             this.currentOrderNum = orderNum;
             this.currentFileName = this.playlist[orderNum].name.slice(0, -4);
             var lis = this.listContainer.getElementsByTagName('li');
@@ -204,6 +245,18 @@ MmPlayer.prototype = {
         }, function(e) {
             that._updateTitle('!Fail to decode the file', false);
             console.log(e);
+            //play the next song
+            var lis = that.listContainer.getElementsByTagName('li');
+            for (var i = lis.length - 1; i >= 0; i--) {
+                if (i === that.currentOrderNum) {
+                    this.addClass(lis[i], 'fail');//mark the file as failed one
+                    break;
+                }
+            };
+            if (that.currentOrderNum===that.playlist.length-1) {
+                that.currentOrderNum=0;
+            };
+            that.play(that.currentOrderNum);
         });
     },
     _drawSpectrum: function(audioCtx, buffer) {
@@ -267,11 +320,6 @@ MmPlayer.prototype = {
         };
         that.animationId = requestAnimationFrame(drawFrame);
     },
-    pause: function(time) {
-        this.forceStop = true;
-        this.source.stop(time);
-        this.status = 0;
-    },
     stop: function() {
         this.forceStop = true;
         this.source.stop(0);
@@ -284,9 +332,9 @@ MmPlayer.prototype = {
             docFragment = document.createDocumentFragment(); //use docfragment to improve the performance
         for (var i = files.length - 1; i >= 0; i--) {
             if (files[i].size > 31457280) {
-            //skip file whoes size is large then 30Mb
-            console.log(files[i].name +'skiped for file size larger than 30Mb');
-                 continue;
+                //skip file whoes size is large then 30Mb
+                console.log(files[i].name + 'skiped for file size larger than 30Mb');
+                continue;
             };
             li = document.createElement("li");
             li.innerHTML = '<span class="remove" title="remove from list">X</span>' + '<span class="title">' + files[i].name.slice(0, -4) + '</span>';
@@ -326,6 +374,7 @@ MmPlayer.prototype = {
         this.currentFileName = null;
         if (this.status === 1) {
             this.source.stop(0);
+            cancelAnimationFrame(this.animationId); //stop the previous animation
         }
         this.source = null;
         this.status = 0;
@@ -333,6 +382,7 @@ MmPlayer.prototype = {
             this.listContainer.removeChild(this.listContainer.firstChild);
         };
         this._updateTitle(this.APP_NAME, false);
+        this.drawMarkCat();
     },
     shuffleList: function() {
         var that = this,
@@ -354,6 +404,9 @@ MmPlayer.prototype = {
         };
         this.play(this.currentOrderNum);
     },
+    _disableControlPanel: function() {
+        //when the audio is under decoding, disable the buttons in the control panel to avoid errors
+    },
     _getSlectedIndex: function(target) {
         var li = target.parentNode,
             index = 0;
@@ -364,15 +417,8 @@ MmPlayer.prototype = {
         }
         return index;
     },
-    // _getLiIndex: function(li) {
-    //     var childs = li.parentNode.childNodes;
-    //     for (i = 0; i < childs.length; i++) {
-    //         if (li == childs[i]) break;
-    //     }
-    //     return i;
-    // },
     _updateTitle: function(text, processing) {
-        var infoBar = document.getElementsByTagName('header')[0],
+        var infoBar = document.getElementById('info'),
             dots = '...',
             i = 0,
             that = this;
@@ -400,5 +446,22 @@ MmPlayer.prototype = {
         var elClass = ' ' + el.className + ' ';
         while (elClass.indexOf(' ' + cls + ' ') != -1) elClass = elClass.replace(' ' + cls + ' ', '');
         el.className = elClass;
+    },
+    drawMarkCat: function() {
+        var that = this,
+            imgPath = 'resource/img/mmplayer_mosaik.png',
+            img = new Image();
+        img.onload = function() {
+            var c = that.canvas,
+                ctx = that.canvas.getContext('2d'),
+                w = c.width,
+                h = c.height;
+            ctx.clearRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+        }
+        img.onerror = function(e) {
+            console.log(e);
+        }
+        img.src = imgPath;
     }
 }

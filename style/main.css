@@ -4,7 +4,7 @@ html, body {
     height: 100%;
     font-family: 'arial';
     background-color: #272822;
-    color: #FEFEFE;
+    color: #ddd;
 }
 div, span, p, table, canvas, header, footer, nav, section, aside {
     transition: all 0.3s ease-in-out;
@@ -12,14 +12,43 @@ div, span, p, table, canvas, header, footer, nav, section, aside {
     -moz-transition: all 0.3s ease-in-out;
     -ms-transition: all 0.3s ease-in-out;
 }
-.current{
-    color:green;
+aside.control {
+    transition: all 0.5s ease-in-out;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+}
+.current {
+    color: green;
+}
+.fail {
+    color: rgb(204,0,0);
 }
 header {
     position: absolute;
-    top: 0;
+    top: 2px;
     width: 100%;
     height: 20px;
+}
+span#showControl {
+    margin: 2px;
+    color: #555;
+    cursor: pointer;
+    padding: 5px;
+    box-shadow: 0 0 3px #555;
+}
+span#showControl:hover {
+    color: green;
+}
+span#showControl:after {
+    cursor: pointer;
+    border: 1px solid #aaa;
+    border-radius: 50%;
+    content: url(../resource/img/mmplayer_16.png);
+    transition:all 0.3s ease-in-out;
+}
+span#showControl:hover:after {
+    border-color:green;
 }
 div.wrapper {
     height: 100%;
@@ -31,7 +60,7 @@ aside.control {
     height: 500px;
     padding: 5px;
     position: absolute;
-    top: 50px;
+    top: 60px;
     left: -1px;
     box-shadow: 0 0 30px #555;
     background-color: #272822;
@@ -51,6 +80,7 @@ aside ul#controlPanel li {
     cursor: pointer;
 }
 aside ul#controlPanel li:hover, aside ol#playlist span.title:hover {
+    color: #fefefe;
     text-decoration: underline;
 }
 aside ul#controlPanel li.play:hover {
@@ -59,7 +89,24 @@ aside ul#controlPanel li.play:hover {
 aside ul#controlPanel li.play {
     display: block;
 }
-#playBtn {
+div.controlBtn{
+      font-size: 1.5em;
+    font-weight: bold;
+    margin: 0;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 50%;
+    background-color: #555;
+    margin: 0 auto;
+    display: inline-block;
+}
+div.controlBtn:hover{
+     color: #000;
+    background-color: #999;
+    text-decoration: none;
+}
+/*#playBtn {
     font-size: 1.5em;
     font-weight: bold;
     margin: 0;
@@ -74,7 +121,7 @@ aside ul#controlPanel li.play {
     color: #000;
     background-color: #999;
     text-decoration: none;
-}
+}*/
 aside p.close {
     text-align: right;
     margin: 5px;
@@ -127,6 +174,9 @@ aside ol#playlist li {
 aside ol#playlist li span.remove {
     color: #555;
     padding: 0 5px 0 0;
+}
+aside ol#playlist li span.remove:hover {
+    color: rgb(204, 0, 0);
 }
 div#visualizer {
     width: 100%;

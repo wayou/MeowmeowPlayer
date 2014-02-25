@@ -7,32 +7,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Meowmeow Player | HTML5 audio player with spectrum visualizer</title>
         <link rel="stylesheet" href="style/main.css">
+        <link rel="shortcut icon" href="favicon.ico">
     </head>
     <body>
         <header>
-            <span id="showControl"></span> Meow meow Player
+            <span id="showControl">PLAYLIST</span> <span id="info"> Meow meow Player</span>
         </header>
         <div class="wrapper">
             <aside class="control">
-                <p  class="close"><span title="colse">X</span></p>
+                <p  class="close"><span title="colse" id="close">X</span></p>
                 <ul id="controlPanel">
                     <li class='play'>
-                    	<div id="playBtn" title="stop">
-                    		!
-                    	</div>
+                        <div id="pre" class="controlBtn" title="previous">I&lt;</div>
+                    	<div id="playBtn"  class="controlBtn" title="stop">O</div>
+                        <div id="next" class="controlBtn" title="next">&gt;I</div>
                     </li>
                     <li>
-                        <div id="shuffle">
+                        <div id="shuffle" title="shuffle the order of songs">
                             Shuffle
                         </div>
                     </li>
                     <li>
-                        <div id="empty">
+                        <div id="empty" title="empty the list">
                             Empty
                         </div>
                     </li>
                     <li>
-                        <div class="add">
+                        <div class="add" title="add files to list, you can also drag files to the page">
                             <label for="addFiles" >Add </label>
                             <input type="file" id="addFiles" multiple />
                         </div>
