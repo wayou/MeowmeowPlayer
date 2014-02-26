@@ -25,6 +25,7 @@ var MmPlayer = function() {
     this.listContainer = document.getElementById('playlist'),
     this.status = 0, //1 for stopped and 1 for playing
     this.canvas = document.getElementById('canvas'),
+    this.mirror = document.getElementById('mirror'),
     this.animationId = null,
     this.titleUpdateId = null,
     this.forceStop = false
@@ -141,8 +142,6 @@ MmPlayer.prototype = {
                 playBtn.title = 'play';
             } else {
                 that.play(that.currentOrderNum);
-                playBtn.textContent = 'O';
-                playBtn.title = 'stop';
             };
         })
         //empty button
@@ -195,6 +194,9 @@ MmPlayer.prototype = {
         this.play(0); //first run, play the first song
     },
     play: function(orderNum, time) {
+        var playBtn = document.getElementById('playBtn');
+        playBtn.textContent = 'O';
+        playBtn.title = 'stop';
         if (time !== undefined && this.source !== null) {
             //resume play
             //this.source.start(time);
@@ -249,12 +251,16 @@ MmPlayer.prototype = {
             var lis = that.listContainer.getElementsByTagName('li');
             for (var i = lis.length - 1; i >= 0; i--) {
                 if (i === that.currentOrderNum) {
-                    that.addClass(lis[i], 'fail');//mark the file as failed one
+                    if (!(lis[i].className.indexOf('fail') > 0)) {
+                        that.addClass(lis[i], 'fail'); //mark the file as failed one
+                    }
                     break;
                 }
             };
-            if (that.currentOrderNum===that.playlist.length-1) {
-                that.currentOrderNum=0;
+            if (that.currentOrderNum === that.playlist.length - 1) {
+                that.currentOrderNum = 0;
+            } else {
+                ++that.currentOrderNum;
             };
             that.play(that.currentOrderNum);
         });
@@ -264,7 +270,9 @@ MmPlayer.prototype = {
             source = audioCtx.createBufferSource(),
             analyser = audioCtx.createAnalyser(),
             canvas = this.canvas,
+            mirror = this.mirror,
             canvasCtx = canvas.getContext('2d'),
+            mirrorCtx = mirror.getContext('2d'),
             cwidth = canvas.width,
             cheight = canvas.height - 2,
             meterWidth = 10, //width of the meters in the spectrum
@@ -316,6 +324,9 @@ MmPlayer.prototype = {
                 canvasCtx.fillStyle = gradient; //set the filllStyle to gradient for a better look
                 canvasCtx.fillRect(i * 12 /*meterWidth+gap*/ , cheight - value + capHeight, meterWidth, cheight); //the meter
             }
+            //draw the mirror graphic
+            mirrorCtx.clearRect(0, 0, cwidth, cheight);
+            mirrorCtx.drawImage(canvas, 0, -100, cwidth, cheight);
             that.animationId = requestAnimationFrame(drawFrame);
         };
         that.animationId = requestAnimationFrame(drawFrame);
@@ -382,6 +393,7 @@ MmPlayer.prototype = {
             this.listContainer.removeChild(this.listContainer.firstChild);
         };
         this._updateTitle(this.APP_NAME, false);
+        this.mirror.getContext('2d').clearRect(0, 0, this.mirror.width, this.mirror.height);
         this.drawMarkCat();
     },
     shuffleList: function() {
@@ -410,7 +422,7 @@ MmPlayer.prototype = {
     _getSlectedIndex: function(target) {
         var li = target.parentNode,
             index = 0;
-        this.addClass(li, 'currentItem');
+        // this.addClass(li, 'currentItem');
         while (li.previousElementSibling) {
             li = li.previousElementSibling;
             index += 1;
