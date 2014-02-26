@@ -21,7 +21,7 @@ div, span, p, table, canvas, header, footer, nav, section, aside {
 }
 header {
     position: absolute;
-    top: 2px;
+    top: 8px;
     width: 100%;
     height: 20px;
     z-index: 99;
@@ -65,6 +65,179 @@ aside.control {
     -moz-transition: all 0.5s ease-in-out;
     -ms-transition: all 0.5s ease-in-out;
 }
+div.overlay{
+    width: 260px;
+    height: 510px;
+    position: absolute;
+    top: 0px;
+    left: -1px;
+    z-index: 100;
+    background-color: rgba(28,28,28,0.9);
+    cursor: progress;
+}
+/*win8 style loading animation http://codepen.io/jameswyse/pen/uisvk*/
+.loader{
+    position: relative;
+    top: 100px;
+    left: 100px;
+}
+.loader .circle {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  opacity: 0;
+  transform: rotate(225deg);
+  animation-iteration-count: infinite;
+  animation-name: orbit;
+  animation-duration: 5.5s;
+    -webkit-transform: rotate(225deg);
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-name: orbit;
+  -webkit-animation-duration: 5.5s;
+    -moz-transform: rotate(225deg);
+  -moz-animation-iteration-count: infinite;
+  -moz-animation-name: orbit;
+  -moz-animation-duration: 5.5s;
+}
+.loader .circle:after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 5px;
+  background: #fff;
+  /* Pick a color */
+}
+.loader .circle:nth-child(2) {
+  animation-delay: 240ms;
+  -webkit-delay: 240ms;
+  -moz-delay: 240ms;
+}
+.loader .circle:nth-child(3) {
+  animation-delay: 480ms;
+  -webkit-animation-delay: 480ms;
+  -moz-animation-delay: 480ms;
+}
+.loader .circle:nth-child(4) {
+  animation-delay: 720ms;
+  -webkit-animation-delay: 720ms;
+  -moz-animation-delay: 720ms;
+}
+.loader .circle:nth-child(5) {
+  animation-delay: 960ms;
+  -webkit-animation-delay: 960ms;
+  -moz-animation-delay: 960ms;
+}
+@keyframes orbit {
+  0% {
+    transform: rotate(225deg);
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+  7% {
+    transform: rotate(345deg);
+    animation-timing-function: linear;
+  }
+  30% {
+    transform: rotate(455deg);
+    animation-timing-function: ease-in-out;
+  }
+  39% {
+    transform: rotate(690deg);
+    animation-timing-function: linear;
+  }
+  70% {
+    transform: rotate(815deg);
+    opacity: 1;
+    animation-timing-function: ease-out;
+  }
+  75% {
+    transform: rotate(945deg);
+    animation-timing-function: ease-out;
+  }
+  76% {
+    transform: rotate(945deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(945deg);
+    opacity: 0;
+  }
+}
+@-webkit-keyframes orbit {
+  0% {
+    -webkit-transform: rotate(225deg);
+    opacity: 1;
+    -webkit-animation-timing-function: ease-out;
+  }
+  7% {
+    -webkit-transform: rotate(345deg);
+    -webkit-animation-timing-function: linear;
+  }
+  30% {
+    -webkit-transform: rotate(455deg);
+    -webkit-animation-timing-function: ease-in-out;
+  }
+  39% {
+    -webkit-transform: rotate(690deg);
+    -webkit-animation-timing-function: linear;
+  }
+  70% {
+    -webkit-transform: rotate(815deg);
+    opacity: 1;
+    -webkit-animation-timing-function: ease-out;
+  }
+  75% {
+    -webkit-transform: rotate(945deg);
+    -webkit-animation-timing-function: ease-out;
+  }
+  76% {
+    -webkit-transform: rotate(945deg);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: rotate(945deg);
+    opacity: 0;
+  }
+}
+@-moz-keyframes orbit {
+  0% {
+    -moz-transform: rotate(225deg);
+    opacity: 1;
+    -moz-animation-timing-function: ease-out;
+  }
+  7% {
+    -moz-transform: rotate(345deg);
+    -moz-animation-timing-function: linear;
+  }
+  30% {
+    -moz-transform: rotate(455deg);
+    -moz-animation-timing-function: ease-in-out;
+  }
+  39% {
+    -moz-transform: rotate(690deg);
+    -moz-animation-timing-function: linear;
+  }
+  70% {
+    -moz-transform: rotate(815deg);
+    opacity: 1;
+    -moz-animation-timing-function: ease-out;
+  }
+  75% {
+    -moz-transform: rotate(945deg);
+    -moz-animation-timing-function: ease-out;
+  }
+  76% {
+    -moz-transform: rotate(945deg);
+    opacity: 0;
+  }
+  100% {
+    -moz-transform: rotate(945deg);
+    opacity: 0;
+  }
+}
+
+
 aside.control ul, aside.control ol {
     margin: 0;
 }
@@ -106,30 +279,15 @@ div.controlBtn:hover{
     background-color: #999;
     text-decoration: none;
 }
-/*#playBtn {
-    font-size: 1.5em;
-    font-weight: bold;
-    margin: 0;
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
-    border-radius: 50%;
-    background-color: #555;
-    margin: 0 auto;
-}
-#playBtn:hover {
-    color: #000;
-    background-color: #999;
-    text-decoration: none;
-}*/
-aside p.close {
-    text-align: right;
+
+aside p.winTitle {
     margin: 5px;
 }
-aside p.close span {
+aside p.winTitle span#close {
+    float: right;
     cursor: pointer;
 }
-aside p.close span:hover {
+aside p.winTitle span#close:hover {
     color: rgb(204, 0, 0);
 }
 /*custom the file upload input*/
@@ -182,7 +340,6 @@ aside ol#playlist li span.remove:hover {
 }
 div#visualizer {
     text-align: center;
-    top: 15%;
 }
 div#visualizer #canvas {
     margin-top: 4%;
@@ -192,12 +349,31 @@ div#visualizer #canvas {
     right: 0;
     bottom: 0;
 }
+
 canvas#mirror{
-    opacity: 0.1;
+    opacity: 0.5;
     position: relative;
-    top: -5px;
-    -webkit-transform: scaleY(-1);
-    -moz-transform: scaleY(-1);
-    -ms-transform: scaleY(-1);
-    transform: scaleY(-1);
+    top: -66px;
+    -webkit-transform: scaleY(-0.5);
+    -moz-transform: scaleY(-0.5);
+    -ms-transform: scaleY(-0.5);
+    transform: scaleY(-0.5);
 }
+div#mirrorWrapper{
+    height: 150px;
+}
+/*gradient transparency http://hammerspace.co.uk/2012/02/css3-gradients-with-transparency*/
+div#mirrorWrapper:after {
+    display: block;
+height: 150px;
+width: 100%;
+position: relative;
+top: -257px;
+content: " ";
+background: -moz-linear-gradient(top,rgba(39,40,34,0) 0%, rgba(39,40,34,1) 75%);
+background: -webkit-linear-gradient(top,rgba(39,40,34,0) 0%, rgba(39,40,34,1) 75%);
+background: -o-linear-gradient(top,rgba(39,40,34,0) 0%, rgba(39,40,34,1) 75%);
+background: -ms-linear-gradient(top,rgba(39,40,34,0) 0%, rgba(39,40,34,1) 75%);
+background: linear-gradient(top,rgba(39,40,34,0) 0%, rgba(39,40,34,1) 75%);
+}
+
