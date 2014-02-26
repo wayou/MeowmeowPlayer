@@ -21,6 +21,7 @@ var MmPlayer = function() {
     this.playlist = [],
     this.currentOrderNum = 0, //orderNum starts from 0
     this.currentFileName = null,
+    this.timeContainer = document.getElementById('time'),
     this.currentBuffer = null,
     this.listContainer = document.getElementById('playlist'),
     this.status = 0, //1 for stopped and 1 for playing
@@ -338,9 +339,24 @@ MmPlayer.prototype = {
             //draw the mirror
             mirrorCtx.clearRect(0, 0, cwidth, cheight);
             mirrorCtx.drawImage(canvas, 0, -100, cwidth, cheight);
+            //display time
+            // if (that.source !== null&&that.status===1) {
+            //     that.timeContainer.textContent = that._timeFormat(that.audioContext.currentTime);
+            // } else {
+            //     that.timeContainer.textContent = '&nbsp;';
+            // };
             that.animationId = requestAnimationFrame(drawFrame);
         };
         that.animationId = requestAnimationFrame(drawFrame);
+    },
+    _timeFormat: function(seconds) {
+        var result ='00:'+ Math.round(seconds);
+        if (seconds > 59) {
+            var min=Math.floor(seconds / 60),
+             sec=Math.floor(seconds % 60);
+            result =(min>9?min:('0'+min))+ ':' + (sec>9?sec:('0'+sec));
+        };
+        return result;
     },
     _disableControl: function() {
         var overlay = document.createElement('div'),
@@ -435,6 +451,8 @@ MmPlayer.prototype = {
         //TODO
     },
     _audioEnd: function() {
+        // this.timeContainer.textContent ='&nbsp;';
+        // this.audioContext.currentTime=0;
         if (this.forceStop) {
             this.forceStop = false;
             return;
