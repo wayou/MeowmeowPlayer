@@ -324,7 +324,7 @@ MmPlayer.prototype = {
                 canvasCtx.fillStyle = gradient; //set the filllStyle to gradient for a better look
                 canvasCtx.fillRect(i * 12 /*meterWidth+gap*/ , cheight - value + capHeight, meterWidth, cheight); //the meter
             }
-            //draw the mirror graphic
+            //draw the mirror
             mirrorCtx.clearRect(0, 0, cwidth, cheight);
             mirrorCtx.drawImage(canvas, 0, -100, cwidth, cheight);
             that.animationId = requestAnimationFrame(drawFrame);
