@@ -155,10 +155,16 @@ MmPlayer.prototype = {
         //close button
         closeBtn.addEventListener('click', function(e) {
             document.getElementsByClassName('control')[0].style.left = "-100%";
+            if (document.getElementsByClassName('overlay')[0]) {
+                document.getElementsByClassName('overlay')[0].style.left = "-100%";
+            };
         })
         //show control button
         showControlBtn.addEventListener('click', function(e) {
             document.getElementsByClassName('control')[0].style.left = "-1px";
+            if (document.getElementsByClassName('overlay')[0]) {
+                document.getElementsByClassName('overlay')[0].style.left = "-1px";
+            };
         })
         //pre  button
         preBtn.addEventListener('click', function(e) {
@@ -240,11 +246,15 @@ MmPlayer.prototype = {
             return;
         };
         this._updateTitle('Decoding ' + this.currentFileName, true);
+        //disable the control to avoid errors
+        this._disableControl();
         audioContext.decodeAudioData(arraybuffer, function(buffer) {
+            that._enableControl();
             that.currentBuffer = buffer;
             that._updateTitle('Decode succussfully,start the visualizer', true);
             that._drawSpectrum(audioContext, buffer);
         }, function(e) {
+            that._enableControl();
             that._updateTitle('!Fail to decode the file', false);
             console.log(e);
             //play the next song
@@ -258,11 +268,12 @@ MmPlayer.prototype = {
                 }
             };
             if (that.currentOrderNum === that.playlist.length - 1) {
-                that.currentOrderNum = 0;
+                // that.currentOrderNum = 0;
+                return;
             } else {
                 ++that.currentOrderNum;
+                that.play(that.currentOrderNum);
             };
-            that.play(that.currentOrderNum);
         });
     },
     _drawSpectrum: function(audioCtx, buffer) {
@@ -330,6 +341,27 @@ MmPlayer.prototype = {
             that.animationId = requestAnimationFrame(drawFrame);
         };
         that.animationId = requestAnimationFrame(drawFrame);
+    },
+    _disableControl: function() {
+        var overlay = document.createElement('div'),
+            loader = document.createElement('div'),
+            controlPanel = document.getElementsByClassName('control')[0],
+            i = 0;
+        overlay.className = 'overlay';
+        loader.className = 'loader';
+        while (i < 5) {
+            var circle = document.createElement('div');
+            circle.className = 'circle';
+            loader.appendChild(circle);
+            i++;
+        }
+        overlay.appendChild(loader);
+        controlPanel.appendChild(overlay);
+    },
+    _enableControl: function() {
+        var overlay = document.getElementsByClassName('overlay')[0],
+            controlPanel = document.getElementsByClassName('control')[0];
+        controlPanel.removeChild(overlay);
     },
     stop: function() {
         this.forceStop = true;
