@@ -72,9 +72,11 @@ MmPlayer.prototype = {
                 if (that.status === 1) {
                     //if a song is playing, jsut add the new files to the list,else add files and start to play
                     that.addToList(audioInput.files);
+                    audioInput.value='';
                 } else {
                     that._updateTitle('Uploading', true);
                     that.addToList(audioInput.files);
+                    audioInput.value='';
                     that._getFilesAndRun();
                 }
             };
