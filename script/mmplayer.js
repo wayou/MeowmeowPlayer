@@ -1,6 +1,6 @@
 /*
- * Meow meow player v0.1.0 - a music player built with HTML5 audio API =>_<=
- * Wayou Feb 21,2014
+ * Meow meow player v0.1.1 - a music player built with HTML5 audio API =>_<=
+ * Author:Wayou
  * lisenced under the MIT license
  * for more information you can
  * visit the project page on github :https://github.com/Wayou/MeowmeowPlayer/
@@ -350,11 +350,11 @@ MmPlayer.prototype = {
         that.animationId = requestAnimationFrame(drawFrame);
     },
     _timeFormat: function(seconds) {
-        var result ='00:'+ Math.round(seconds);
+        var result = '00:' + Math.round(seconds);
         if (seconds > 59) {
-            var min=Math.floor(seconds / 60),
-             sec=Math.floor(seconds % 60);
-            result =(min>9?min:('0'+min))+ ':' + (sec>9?sec:('0'+sec));
+            var min = Math.floor(seconds / 60),
+                sec = Math.floor(seconds % 60);
+            result = (min > 9 ? min : ('0' + min)) + ':' + (sec > 9 ? sec : ('0' + sec));
         };
         return result;
     },
@@ -445,10 +445,46 @@ MmPlayer.prototype = {
         this.drawMarkCat();
     },
     shuffleList: function() {
-        var that = this,
-            lastIndex,
-            container = this.listContainer;
-        //TODO
+        var container = this.listContainer,
+            l=this.playlist.length,
+        docFragment = document.createDocumentFragment(); 
+
+        this._shuffleArray(this.playlist);
+        for (var i =0; i <l; i++) {
+            if (this.currentFileName === this.playlist[i].name.slice(0, -4)) {
+                this.currentOrderNum = i;
+                break;
+            };
+        };
+        //empty the playlist on the page
+         while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        };
+        //re-fill the playlist on the page with new order
+        for (var i = 0; i<l; i++) {
+            var li = document.createElement("li");
+            li.innerHTML = '<span class="remove" title="remove from list">X</span>' + '<span class="title">' + this.playlist[i].name.slice(0, -4) + '</span>';
+            if (i===this.currentOrderNum) {
+                li.className='current';
+            };
+            docFragment.appendChild(li);
+        };
+        container.appendChild(docFragment);
+    },
+    _shuffleArray: function(array) {
+        //http://bost.ocks.org/mike/shuffle/
+        var m = array.length,
+            t, i;
+        // While there remain elements to shuffle…
+        while (m) {
+            // Pick a remaining element…
+            i = Math.floor(Math.random() * m--);
+            // And swap it with the current element.
+            t = array[m];
+            array[m] = array[i];
+            array[i] = t;
+        }
+       // return array;
     },
     _audioEnd: function() {
         // this.timeContainer.textContent ='&nbsp;';
@@ -465,9 +501,6 @@ MmPlayer.prototype = {
             this.currentOrderNum += 1;
         };
         this.play(this.currentOrderNum);
-    },
-    _disableControlPanel: function() {
-        //when the audio is under decoding, disable the buttons in the control panel to avoid errors
     },
     _getSlectedIndex: function(target) {
         var li = target.parentNode,
