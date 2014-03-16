@@ -14,5 +14,3 @@ Screenshot
 ![alt tag](https://raw.github.com/Wayou/MeowmeowPlayer/master/resource/img/mmplayer_screenshot.png)
 
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Wayou/meowmeowplayer/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
