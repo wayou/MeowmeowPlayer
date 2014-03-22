@@ -1,5 +1,5 @@
 /*
- * Meow meow player v0.1.1 - a music player built with HTML5 audio API =>_<=
+ * Meow meow player v0.2.0 - a music player built with HTML5 audio API =>_<=
  * Author:Wayou
  * lisenced under the MIT license
  * for more information you can
@@ -13,23 +13,24 @@ window.onload = function() {
     player.ini();
 }
 var MmPlayer = function() {
-    this.VERSION = '0.1.0',
-    this.APP_NAME = 'Meow meow Player',
+    this.VERSION = '0.1.0';
+    this.APP_NAME = 'Meow meow Player';
     this.title = this.APP_NAME, //the app title on the top of the page, will upgrade when songs playing
-    this.audioContext = null,
-    this.source = null,
-    this.playlist = [],
-    this.currentOrderNum = 0, //orderNum starts from 0
-    this.currentFileName = null,
-    this.timeContainer = document.getElementById('time'),
-    this.currentBuffer = null,
-    this.listContainer = document.getElementById('playlist'),
-    this.status = 0, //1 for stopped and 1 for playing
-    this.canvas = document.getElementById('canvas'),
-    this.mirror = document.getElementById('mirror'),
-    this.animationId = null,
-    this.titleUpdateId = null,
-    this.forceStop = false
+    this.audioContext = null;
+    this.source = null;
+    this.playlist = [];
+    this.currentOrderNum = 0; //orderNum starts from 0
+    this.currentFileName = null;
+    this.timeContainer = document.getElementById('time');
+    this.currentBuffer = null;
+    this.listContainer = document.getElementById('playlist');
+    this.status = 0; //1 for stopped and 1 for playing
+    this.canvas = document.getElementById('canvas');
+    this.mirror = document.getElementById('mirror');
+    this.animationId = null;
+    this.titleUpdateId = null;
+    this.forceStop = false;
+    this.processing=false;
 }
 MmPlayer.prototype = {
     ini: function() {
@@ -63,8 +64,8 @@ MmPlayer.prototype = {
             nextBtn = document.getElementById('next');
         //listen the file upload
         audioInput.onchange = function() {
-            if (that.audioContext === null) {
-                return
+            if (that.audioContext === null||that.processing) {
+                return;
             };
             //the if statement fixes the file selction cancle, because the onchange will trigger even the file selection been canceled
             if (audioInput.files.length !== 0) {
@@ -101,7 +102,7 @@ MmPlayer.prototype = {
         dropContainer.addEventListener("drop", function(e) {
             e.stopPropagation();
             e.preventDefault();
-            if (that.audioContext === null) {
+            if (that.audioContext === null||that.processing) {
                 return
             };
             if (that.status === 1) {
@@ -115,6 +116,9 @@ MmPlayer.prototype = {
         }, false);
         //play selected entry from the playlist
         listContainer.addEventListener('click', function(e) {
+            if (that.processing) {
+                return;
+            };
             var target = e.target;
             if (e.target.className === 'title') {
                 //play selected item
@@ -171,6 +175,9 @@ MmPlayer.prototype = {
         })
         //pre  button
         preBtn.addEventListener('click', function(e) {
+            if (that.processing) {
+                return;
+            };
             if (that.currentOrderNum === 0) {
                 that.currentOrderNum = that.playlist.length - 1;
             } else {
@@ -180,6 +187,9 @@ MmPlayer.prototype = {
         })
         //next  button
         nextBtn.addEventListener('click', function(e) {
+            if (that.processing) {
+                return;
+            };
             if (that.currentOrderNum === that.playlist.length - 1) {
                 that.currentOrderNum = 0;
             } else {
@@ -206,12 +216,14 @@ MmPlayer.prototype = {
         var playBtn = document.getElementById('playBtn');
         playBtn.textContent = 'O';
         playBtn.title = 'stop';
+        this.processing=true;
         if (time !== undefined && this.source !== null) {
             //resume play
             //this.source.start(time);
             this._drawSpectrum(this.audioContext, this.currentBuffer);
         } else {
             if (this.playlist.length === 0) {
+        this.processing=false;
                 return;
             };
             this.currentOrderNum = orderNum;
@@ -238,6 +250,7 @@ MmPlayer.prototype = {
         };
         reader.onerror = function(e) {
             that._updateTitle('!Fail to read the file', false);
+        this.processing=false;
             console.log(e);
         };
         reader.readAsArrayBuffer(file);
@@ -259,6 +272,7 @@ MmPlayer.prototype = {
         }, function(e) {
             that._enableControl();
             that._updateTitle('!Fail to decode the file', false);
+        this.processing=false;
             console.log(e);
             //play the next song
             var lis = that.listContainer.getElementsByTagName('li');
@@ -313,6 +327,7 @@ MmPlayer.prototype = {
             that._audioEnd();
         };
         source.start(0);
+        this.processing=false;
         this._updateTitle('Playing ' + this.playlist[this.currentOrderNum].name.slice(0, -4), false);
         this.source = source;
         this.status = 1;
