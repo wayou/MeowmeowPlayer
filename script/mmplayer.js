@@ -1,5 +1,5 @@
 /*
- * Meow meow player v0.2.0 - a music player built with HTML5 audio API =>_<=
+ * Meow meow player v0.3.0 - a music player built with HTML5 audio API =>_<=
  * Author:Wayou
  * lisenced under the MIT license
  * for more information you can
